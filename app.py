@@ -10,7 +10,10 @@ import numpy as np
 app = Flask(__name__)
 
 # Initialize Groq client
-client = Groq(api_key="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")
+try:
+    client = Groq(api_key="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")
+except ImportError as e:
+    raise RuntimeError("Failed to import Groq. Please check if the groq package is installed correctly.") from e
 
 # Initialize text-to-speech engine
 engine = pyttsx3.init()
@@ -42,12 +45,12 @@ def handle_query():
     if not memory:
         memory = []
 
-    promp = generate_prompt(user_query, memory)
+    prompt = generate_prompt(user_query, memory)
 
     try:
         completion = client.chat.completions.create(
             model="llama-3.1-8b-instant",
-            messages=[{"role": "user", "content": promp}],
+            messages=[{"role": "user", "content": prompt}],
             temperature=0.2,
             max_tokens=724,
             top_p=0.2,
@@ -105,4 +108,3 @@ def image_recognition():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
-
