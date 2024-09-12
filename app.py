@@ -20,6 +20,8 @@ engine = pyttsx3.init()
 
 # Read the college data from the file
 file_path = "collegedata.txt"
+if not os.path.isfile(file_path):
+    raise FileNotFoundError(f"File {file_path} does not exist.")
 with open(file_path, 'r') as file:
     data = file.read()
 
@@ -86,6 +88,8 @@ def recognize_speech_from_mic():
             return text
         except sr.UnknownValueError:
             return "Sorry, I could not understand the audio."
+        except sr.RequestError:
+            return "Sorry, there was an issue with the speech recognition service."
 
 @app.route('/image-recognition', methods=['POST'])
 def image_recognition():
@@ -99,8 +103,10 @@ def image_recognition():
 
     # Simple image recognition logic (OpenCV)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    cv2.imshow('Image', gray)
-    cv2.waitKey(1)  # Display image
+    
+    # Commented out OpenCV GUI functions for headless server
+    # cv2.imshow('Image', gray)
+    # cv2.waitKey(1)  # Display image
 
     # Placeholder for further recognition logic
     return jsonify({"message": "Image processed successfully"})
